@@ -1,25 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { RuleBuilderProvider } from "./context/RuleBuilderContext";
+import { RuleBuilder } from "./components/RuleBuilder";
+import "./index.css";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <RuleBuilderProvider>
+      <main className="min-h-screen bg-gray-100 py-10">
+        <h1 className="text-2xl font-semibold text-center mb-8">
+          Rule Builder
+        </h1>
+        <RuleBuilder />
+      </main>
+    </RuleBuilderProvider>
   );
 }
 
