@@ -4,19 +4,23 @@ import { Draggable, Droppable } from "react-beautiful-dnd";
 
 import { Group } from "./Group";
 import { Filter } from "./Filter";
-import { GroupNode } from "../types";
-import { useRuleBuilder } from "../context/RuleBuilderContext";
+import { Action, GroupNode, State } from "../types";
 
 interface DndListProps {
   id: string;
   group: GroupNode;
+  state: State;
+  dispatch: React.Dispatch<Action>;
 }
 
-export const DndList: React.FC<DndListProps> = ({ id, group }) => {
-  const { state } = useRuleBuilder();
-
+export const DndList: React.FC<DndListProps> = ({
+  id,
+  group,
+  state,
+  dispatch,
+}) => {
   return (
-    <Droppable droppableId={id} type="RULE">
+    <Droppable droppableId={id} isDropDisabled={false} type="RULE">
       {(provided) => (
         <div
           ref={provided.innerRef}
@@ -29,7 +33,6 @@ export const DndList: React.FC<DndListProps> = ({ id, group }) => {
               <Draggable key={node.id} draggableId={node.id} index={index}>
                 {(provided) => (
                   <div
-                    key={node.id}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}>
@@ -38,9 +41,11 @@ export const DndList: React.FC<DndListProps> = ({ id, group }) => {
                         id={node.id}
                         disabled={group.disabled}
                         locked={group.locked}
+                        state={state}
+                        dispatch={dispatch}
                       />
                     ) : (
-                      <Group id={node.id} />
+                      <Group id={node.id} state={state} dispatch={dispatch} />
                     )}
                   </div>
                 )}

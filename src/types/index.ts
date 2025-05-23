@@ -32,8 +32,8 @@ export interface State {
 }
 
 export type Action =
-  | { type: "ADD_FILTER"; payload: { parentId: string } }
-  | { type: "ADD_GROUP"; payload: { parentId: string } }
+  | { type: "ADD_FILTER"; payload: { parentId: string; id: string } }
+  | { type: "ADD_GROUP"; payload: { parentId: string; id: string } }
   | { type: "DISABLE_GROUP"; payload: { groupId: string } }
   | { type: "LOCK_GROUP"; payload: { groupId: string } }
   | { type: "COLLAPSE_GROUP"; payload: { groupId: string } }

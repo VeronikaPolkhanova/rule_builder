@@ -3,20 +3,23 @@ import React from "react";
 import { Minus } from "lucide-react";
 
 import Button from "./ui/Button";
-import { useRuleBuilder } from "../context/RuleBuilderContext";
+import { Action, State } from "../types";
 
 interface FilterProps {
   id: string;
   disabled?: boolean;
   locked?: boolean;
+  state: State;
+  dispatch: React.Dispatch<Action>;
 }
 
 export const Filter: React.FC<FilterProps> = ({
   id,
   disabled = false,
   locked = false,
+  state,
+  dispatch,
 }) => {
-  const { state, dispatch } = useRuleBuilder();
   const filter = state.nodes[id];
 
   if (!filter || filter.type !== "filter") return null;

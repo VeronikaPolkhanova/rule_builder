@@ -1,29 +1,36 @@
 import React, { useState } from "react";
 
-import { FolderPlus, Plus, RefreshCw, Edit } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import { createPortal } from "react-dom";
+import { Edit, FolderPlus, Plus, RefreshCw } from "lucide-react";
 
 import { cn } from "./lib/utils";
 import Button from "./ui/Button";
-import { useRuleBuilder } from "../context/RuleBuilderContext";
-import { createPortal } from "react-dom";
-import { ChangeNameModal } from "./ChangeNameModal";
 import { DndList } from "./DndList";
+import { Action, State } from "../types/index";
+import { ChangeNameModal } from "./ChangeNameModal";
 
 interface GroupProps {
   id: string;
+  state: State;
+  dispatch: React.Dispatch<Action>;
 }
 
-export const Group: React.FC<GroupProps> = ({ id }) => {
+export const Group: React.FC<GroupProps> = ({ id, state, dispatch }) => {
   const [isModal, setIsModal] = useState(false);
-  const { state, dispatch } = useRuleBuilder();
+
   const group = state.nodes[id];
 
   if (!group || group.type !== "group") return null;
 
-  const handleAddFilter = () =>
-    dispatch({ type: "ADD_FILTER", payload: { parentId: id } });
-  const handleAddGroup = () =>
-    dispatch({ type: "ADD_GROUP", payload: { parentId: id } });
+  const handleAddFilter = () => {
+    const newId = uuidv4();
+    dispatch({ type: "ADD_FILTER", payload: { parentId: id, id: newId } });
+  };
+  const handleAddGroup = () => {
+    const newId = uuidv4();
+    dispatch({ type: "ADD_GROUP", payload: { parentId: id, id: newId } });
+  };
   const handleDisableGroup = () =>
     dispatch({ type: "DISABLE_GROUP", payload: { groupId: id } });
   const handleCollapseGroup = () =>
@@ -76,7 +83,7 @@ export const Group: React.FC<GroupProps> = ({ id }) => {
               <RefreshCw size={16} />
             </Button>
           </div>
-          <DndList group={group} id={id} />
+          <DndList group={group} id={id} state={state} dispatch={dispatch} />
           <div className="flex gap-2 items-center">
             <Button
               onClick={handleAddFilter}

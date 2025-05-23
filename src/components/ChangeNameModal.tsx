@@ -37,7 +37,7 @@ export const ChangeNameModal: React.FC<ChangeNameModalProps> = ({
           value={name}
           onChange={onChangeName}
           className="border rounded px-2 py-1 text-sm w-full"
-          placeholder="Value"
+          placeholder="value"
         />
         <Button onClick={handleChangeName}>Save</Button>
       </div>

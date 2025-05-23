@@ -1,5 +1,4 @@
 import React, { createContext, useReducer, useContext, ReactNode } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { State, Action, FilterNode, GroupNode } from "../types/index";
 
 const RuleBuilderContext = createContext<{
@@ -8,15 +7,53 @@ const RuleBuilderContext = createContext<{
 } | null>(null);
 
 const createInitialState = (): State => {
-  const rootId = uuidv4();
+  const rootId = "rootGroup";
   return {
     rootId,
     nodes: {
       [rootId]: {
-        id: rootId,
+        id: "rootGroup",
         type: "group",
         name: "New group",
         logic: "AND",
+        children: [
+          "93aaea76-fe63-4016-9a11-396304014506",
+          "6b06bad6-8221-474c-b128-62a09684eb20",
+          "48cd03b1-a331-48e7-94ba-2f52691ef656",
+        ],
+        collapsed: false,
+        locked: false,
+        disabled: false,
+      },
+      "93aaea76-fe63-4016-9a11-396304014506": {
+        id: "93aaea76-fe63-4016-9a11-396304014506",
+        type: "filter",
+        field: "gender",
+        operator: "equals",
+        value: "",
+      },
+      "6b06bad6-8221-474c-b128-62a09684eb20": {
+        id: "6b06bad6-8221-474c-b128-62a09684eb20",
+        type: "group",
+        logic: "AND",
+        name: "New GROUP",
+        children: ["f4c697a4-5913-42ff-8840-2adea1eacf19"],
+        collapsed: false,
+        locked: false,
+        disabled: false,
+      },
+      "f4c697a4-5913-42ff-8840-2adea1eacf19": {
+        id: "f4c697a4-5913-42ff-8840-2adea1eacf19",
+        type: "filter",
+        field: "gender",
+        operator: "equals",
+        value: "",
+      },
+      "48cd03b1-a331-48e7-94ba-2f52691ef656": {
+        id: "48cd03b1-a331-48e7-94ba-2f52691ef656",
+        type: "group",
+        logic: "AND",
+        name: "New GROUP",
         children: [],
         collapsed: false,
         locked: false,
@@ -29,9 +66,8 @@ const createInitialState = (): State => {
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "ADD_FILTER": {
-      const id = uuidv4();
       const newFilter: FilterNode = {
-        id,
+        id: action.payload.id,
         type: "filter",
         field: "gender",
         operator: "equals",
@@ -42,18 +78,17 @@ function reducer(state: State, action: Action): State {
         ...state,
         nodes: {
           ...state.nodes,
-          [id]: newFilter,
+          [action.payload.id]: newFilter,
           [parent.id]: {
             ...parent,
-            children: [...parent.children, id],
+            children: [...parent.children, action.payload.id],
           },
         },
       };
     }
     case "ADD_GROUP": {
-      const id = uuidv4();
       const newGroup: GroupNode = {
-        id,
+        id: action.payload.id,
         type: "group",
         logic: "AND",
         name: "New GROUP",
@@ -67,10 +102,10 @@ function reducer(state: State, action: Action): State {
         ...state,
         nodes: {
           ...state.nodes,
-          [id]: newGroup,
+          [action.payload.id]: newGroup,
           [parent.id]: {
             ...parent,
-            children: [...parent.children, id],
+            children: [...parent.children, action.payload.id],
           },
         },
       };
@@ -186,29 +221,36 @@ function reducer(state: State, action: Action): State {
     }
     case "DRAG_END": {
       const { source, destination, draggableId } = action.payload;
+
       if (!destination) return state;
 
-      const sourceGroup = state.nodes[source.droppableId] as GroupNode;
-      const destGroup = state.nodes[destination.droppableId] as GroupNode;
+      const sourceId = source.droppableId;
+      const destId = destination.droppableId;
 
-      if (!sourceGroup || !destGroup) return state;
+      if (!state.nodes[sourceId] || !state.nodes[destId]) return state;
 
-      const sourceChildren = [...sourceGroup.children];
-      const destChildren = [...destGroup.children];
+      const sourceGroup = state.nodes[sourceId] as GroupNode;
+      const destGroup = state.nodes[destId] as GroupNode;
 
-      sourceChildren.splice(source.index, 1);
+      if (!sourceGroup.children.includes(draggableId)) return state;
 
-      destChildren.splice(destination.index, 0, draggableId);
+      const newSourceChildren = [...sourceGroup.children];
+      newSourceChildren.splice(source.index, 1);
+
+      const newDestChildren =
+        sourceId === destId ? newSourceChildren : [...destGroup.children];
+
+      newDestChildren.splice(destination.index, 0, draggableId);
 
       const updatedNodes = {
         ...state.nodes,
-        [sourceGroup.id]: {
+        [sourceId]: {
           ...sourceGroup,
-          children: sourceChildren,
+          children: newSourceChildren,
         },
-        [destGroup.id]: {
+        [destId]: {
           ...destGroup,
-          children: destChildren,
+          children: newDestChildren,
         },
       };
 

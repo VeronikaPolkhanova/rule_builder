@@ -15,7 +15,7 @@ export const RuleBuilder: React.FC = () => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="p-6 max-w-4xl mx-auto">
-        <Group id={state.rootId} />
+        <Group id={state.rootId} state={state} dispatch={dispatch} />
       </div>
     </DragDropContext>
   );
