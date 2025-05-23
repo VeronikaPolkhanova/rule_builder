@@ -22,8 +22,6 @@ export interface GroupNode extends NodeBase {
   name: string;
   children: string[];
   collapsed: boolean;
-  // locked: boolean;
-  // disabled: boolean;
 }
 
 export type RuleNode = FilterNode | GroupNode;

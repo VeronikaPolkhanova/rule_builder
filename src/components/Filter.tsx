@@ -37,7 +37,7 @@ export const Filter: React.FC<FilterProps> = ({
   return (
     <div className="flex items-center gap-2 p-3 border rounded-lg bg-gray-50">
       <select
-        disabled={disabled}
+        disabled={disabled || locked}
         value={filter.field}
         onChange={handleChange("field")}
         className="border rounded px-2 py-1 text-sm">
@@ -45,7 +45,7 @@ export const Filter: React.FC<FilterProps> = ({
         <option value="age">Age</option>
       </select>
       <select
-        disabled={disabled}
+        disabled={disabled || locked}
         value={filter.operator}
         onChange={handleChange("operator")}
         className="border rounded px-2 py-1 text-sm">
@@ -53,13 +53,16 @@ export const Filter: React.FC<FilterProps> = ({
         <option value="not_equals">Not Equals</option>
       </select>
       <input
-        disabled={disabled}
+        disabled={disabled || locked}
         value={filter.value}
         onChange={handleChange("value")}
         className="border rounded px-2 py-1 text-sm"
         placeholder="Value"
       />
-      <Button disabled={locked || disabled} onClick={handleRemove}>
+      <Button
+        disabled={locked || disabled}
+        onClick={handleRemove}
+        className="py-1 p-1">
         <Minus size={16} />
       </Button>
     </div>

@@ -36,7 +36,8 @@ export const Group: React.FC<GroupProps> = ({ id }) => {
   return (
     <div
       className={cn(
-        group.logic === "OR" ? " border-green-500" : "border-blue-500",
+        group.logic === "OR" ? "border-green-500" : "border-blue-500",
+        group.disabled && "border-gray-300",
         group.disabled || group.locked ? "bg-gray-200" : "bg-white",
         "border-x-4 rounded-xl p-4 space-y-4"
       )}>
@@ -46,7 +47,8 @@ export const Group: React.FC<GroupProps> = ({ id }) => {
           <span className="text-gray-700">{group.name}</span>
           <Button
             onClick={() => setIsModal(true)}
-            disabled={group.locked || group.disabled}>
+            disabled={group.locked || group.disabled}
+            className="py-1 p-1">
             <Edit size={16} />
           </Button>
         </div>
@@ -69,7 +71,8 @@ export const Group: React.FC<GroupProps> = ({ id }) => {
             <span className="text-gray-700">{group.logic}</span>
             <Button
               onClick={handleToggleLogic}
-              disabled={group.locked || group.disabled}>
+              disabled={group.locked || group.disabled}
+              className="py-1 p-1">
               <RefreshCw size={16} />
             </Button>
           </div>
@@ -77,12 +80,14 @@ export const Group: React.FC<GroupProps> = ({ id }) => {
           <div className="flex gap-2 items-center">
             <Button
               onClick={handleAddFilter}
-              disabled={group.locked || group.disabled}>
+              disabled={group.locked || group.disabled}
+              className="flex items-center">
               <Plus className="mr-1" size={16} /> Add Filter
             </Button>
             <Button
               onClick={handleAddGroup}
-              disabled={group.locked || group.disabled}>
+              disabled={group.locked || group.disabled}
+              className="flex items-center">
               <FolderPlus className="mr-1" size={16} /> Add Group
             </Button>
           </div>

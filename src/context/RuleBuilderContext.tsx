@@ -75,20 +75,20 @@ function reducer(state: State, action: Action): State {
         },
       };
     }
-    case "DISABLE_GROUP": {
+    case "LOCK_GROUP": {
       const { groupId } = action.payload;
 
       const newState = { ...state, nodes: { ...state.nodes } };
 
-      const toggleDisabled = !state.nodes[groupId].disabled;
+      const toggleLocked = !state.nodes[groupId].locked;
 
-      const applyLockRecursively = (id: string, disabled: boolean) => {
+      const applyLockRecursively = (id: string, locked: boolean) => {
         const node = newState.nodes[id];
         if (!node) return;
 
         newState.nodes[id] = {
           ...node,
-          disabled,
+          locked,
         };
 
         if (
@@ -97,16 +97,16 @@ function reducer(state: State, action: Action): State {
           node.children?.length
         ) {
           node.children.forEach((childId: string) =>
-            applyLockRecursively(childId, disabled)
+            applyLockRecursively(childId, locked)
           );
         }
       };
 
-      applyLockRecursively(groupId, toggleDisabled);
+      applyLockRecursively(groupId, toggleLocked);
 
       return newState;
     }
-    case "LOCK_GROUP": {
+    case "DISABLE_GROUP": {
       const group = state.nodes[action.payload.groupId] as GroupNode;
       return {
         ...state,
@@ -114,7 +114,7 @@ function reducer(state: State, action: Action): State {
           ...state.nodes,
           [group.id]: {
             ...group,
-            locked: !group.locked,
+            disabled: !group.disabled,
           },
         },
       };
@@ -190,30 +190,34 @@ function reducer(state: State, action: Action): State {
 
       const sourceGroup = state.nodes[source.droppableId] as GroupNode;
       const destGroup = state.nodes[destination.droppableId] as GroupNode;
+
+      if (!sourceGroup || !destGroup) return state;
+
       const sourceChildren = [...sourceGroup.children];
-      sourceChildren.splice(source.index, 1);
-      //дублируются элементы
-      // const destChildren = [...destGroup.children].filter(
-      //   (it) => it !== draggableId
-      // );
       const destChildren = [...destGroup.children];
+
+      sourceChildren.splice(source.index, 1);
+
       destChildren.splice(destination.index, 0, draggableId);
+
+      const updatedNodes = {
+        ...state.nodes,
+        [sourceGroup.id]: {
+          ...sourceGroup,
+          children: sourceChildren,
+        },
+        [destGroup.id]: {
+          ...destGroup,
+          children: destChildren,
+        },
+      };
 
       return {
         ...state,
-        nodes: {
-          ...state.nodes,
-          [sourceGroup.id]: {
-            ...sourceGroup,
-            children: sourceChildren,
-          },
-          [destGroup.id]: {
-            ...destGroup,
-            children: destChildren,
-          },
-        },
+        nodes: updatedNodes,
       };
     }
+
     default:
       return state;
   }
